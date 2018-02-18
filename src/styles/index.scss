@@ -1,0 +1,52 @@
+$color-lighter: #ffffff;
+$color-light: #ECE9E6;
+$color-darker: #29323c;
+$color-dark: #485563;
+
+@mixin gradients($left, $right){
+	background: $left; /* For browsers that do not support gradients */
+	background: -webkit-linear-gradient($left, $right); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient($left, $right); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient($left, $right); /* For Firefox 3.6 to 15 */
+	background: linear-gradient($left, $right); /* Standard syntax */
+}
+
+@each $val in Jim, Angela, Creed, Dwight, Deryl, Kelly, Kevin, Michael, Pam, Oscar, Toby, Phyllis, Meredith, Stanley{
+	.front-#{$val} {
+		background-image: url('../assets/#{$val}.jpg');
+		background-image: url('assets/#{$val}.jpg');
+		background-image: url('/assets/#{$val}.jpg');
+	}
+}
+
+.card-grid{
+	margin: 2em;
+	max-width: 350px;
+	display: flex;
+	flex-wrap: wrap;
+}
+.card{
+	flex-basis: 22%;
+	flex-grow: 1;
+	min-height: 95px;
+	border: 2px solid $color-light;
+	padding: 1em;
+	margin: .05em;
+	@include gradients($color-light, $color-lighter);
+
+	&:focus{
+		outline: none;
+	}
+}
+.back{
+
+}
+
+.front{
+
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
