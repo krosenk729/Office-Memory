@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.css';
+// import './assets/';
+// import './styles/index.css';
+
 
 // renders a single <button>
 class CardSquare extends React.Component {
@@ -13,10 +15,9 @@ class CardSquare extends React.Component {
   		'front': this.props.show,
   		[cardFront]: this.props.show
   	});
-  	// console.log(this.props)
   	const showText = this.props.show ? this.props.val : '';
     return (
-      <button className={classes} onClick={this.props.onClick}>{this.props.val} is showing {showText}</button>
+      <button className={classes} onClick={this.props.onClick}></button>
     );
   }
 }
@@ -25,7 +26,6 @@ class CardSquare extends React.Component {
 class Board extends React.Component {
 	// onClick={()=>this.props.onClick(i)}
 	_renderCards(props){
-		console.log('before mapping, card list is', props.cardList);
 		return props.cardList.map(i=>{
 			return <CardSquare order={i.order} 
 						key={i.order}
@@ -50,8 +50,9 @@ class Game extends React.Component {
 		super();
 		this.state = {
 			gameCards: CardList(6),
-			guess1: null, // either null or the index of game.
-			guess2: null,
+			guess1: -1, 
+			guess2: -1,
+			locked: false,
 			step: 0,
 			wins: 0,
 			prsteps: 10000
@@ -61,9 +62,9 @@ class Game extends React.Component {
 		console.log('State ', this.state);
 		return([
 			<div className="scoreBoard">
-				Step: {this.state.step}
-				Wins: {this.state.wins}
-				Best Score: {this.state.prsteps === 10000 ? '-' : this.state.prsteps}
+				<span className="score">Step: {this.state.step}</span>
+				<span className="score">Wins: {this.state.wins}</span>
+				<span className="score">Best Score: {this.state.prsteps === 10000 ? '-' : this.state.prsteps}</span>
 			</div>,
 			<div className="gameBoard">
 				<Board cardList={this.state.gameCards} onClick={i=>this._handleClick(i)} />
@@ -72,12 +73,14 @@ class Game extends React.Component {
 	}
 
 	_handleClick(clickedCard){
-		if(clickedCard.show || (this.state.guess1 && this.state.guess2)){
+		if(this.state.locked || clickedCard.show || (this.state.guess1 > -1 && this.state.guess2 > -1)){
 			return console.log('skipped click');
 		}
-		console.log(this.state);
+		this.setState({
+			locked: true
+		});
 
-		if(!this.state.guess1){
+		if(this.state.guess1 < 0){
 		// if this is the first of two guesses...
 			let updatedStep = this.state.step + 1;
 			let updatedCards = this.state.gameCards.slice();
@@ -86,7 +89,8 @@ class Game extends React.Component {
 			this.setState({
 				step: updatedStep,
 				gameCards: updatedCards,
-				guess1: clickedCard.order
+				guess1: clickedCard.order,
+				locked: false
 			});
 		} else {
 		// if this is the second of two guesses...
@@ -106,18 +110,14 @@ class Game extends React.Component {
 	}
 
 	_handleRound(){
-		console.log('handleRound called');
 		let newCardList = this.state.gameCards.slice();
 		let card1 = newCardList[ this.state.guess1 ];
 		let card2 = newCardList[ this.state.guess2 ];
-		console.log('card1', card1);
-		console.log('card2', card2);
 		if(card1.val === card2.val){
 			card1.setFound();
 			card2.setFound();
 
 			if(newCardList.every(c => c.found )){
-				console.log('someone won');
 				return this._newGame();
 			}
 
@@ -128,22 +128,23 @@ class Game extends React.Component {
 
 		this.setState({
 			gameCards: newCardList,
-			guess1: null,
-			guess2: null
+			guess1: -1,
+			guess2: -1,
+			locked: false
 		});
-		console.log('handleRound complete');
 	}
 
 	_newGame(){
 		let newWins = this.state.wins + 1;
 		let newPR = Math.min(this.state.prsteps, this.state.step);
 		this.setState({
-			gameCards: CardList(8),
-			guess1: null,
-			guess2: null,
+			gameCards: CardList(6),
+			guess1: -1,
+			guess2: -1,
 			step: 0,
 			wins: newWins,
-			prsteps: newPR
+			prsteps: newPR,
+			locked: false
 		});
 	}
 
