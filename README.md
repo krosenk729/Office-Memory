@@ -1,3 +1,5 @@
 ## Memory Office Style
 
-React application to play a game of memory 
+ReactJS application to play a game of memory 
+
+![demo](demo.gif)
